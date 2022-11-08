@@ -1,0 +1,37 @@
++++++++++++++++++++++++
++++ Network Helpers +++
++++++++++++++++++++++++
+
+TCPDUMP
+----------------------------------
+tcpdump -i any port 53 - DNS QUERIES SENT.?
+tcpdump -i any port 1337 - PERSONAL SERVER AT 1337 IS RECEIVING ANY TRAFFIC?
+tcpdump port 1337 and host 1.2.3.4 -
+tcpdump -w packets_IP.pcap
+
+*********
+** ARP **
+*********
+
+>SET AN ADDRESS TO ARP TABLE
+`sudo arp -s IP MAC`
+
+DELETE AN ADDRESS
+`sudo arp -d IP MAC`
+
+[ARP SPOOFING](https://en.wikipedia.org/wiki/ARP_spoofing)
+
+***********
+** ROUTE **
+***********
+
+>`ip route`
+>`ip route add default via IP dev eth0`
+>`ip route add 10.1.1.0/30 via 10.1.1.1 dev eth0` 
+
+
+PRIVATE IP RANGES:
+-----------------
+>`10.0.0.0/8`
+>`172.16.0.0/12`
+>`192.168.0.0/16`

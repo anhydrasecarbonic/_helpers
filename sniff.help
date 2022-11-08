@@ -1,0 +1,82 @@
+*******************
+** SNIFF HELPERS **
+*******************
+
+Wireshark Capture Filters:
+	- host $IP
+	- net CIDR
+	- src net CIDR
+	- dst net CIDR
+	- port $PORT
+	- host www.example.com and not (port 80 or port 25)
+	- port not 53 and not arp
+	- tcp portrange 1500-1599
+	- ip ( avoid ARP and STP
+	- not broadcast and not multicast
+	
+
+[Tutorial](https://danielmiessler.com/study/tcpdump/)
+[Official](https://www.tcpdump.org)
+[BPF](https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters)
+
+HTTPS traffic + Hex dump
+>`tcpdump -nnSX port 443`  
+
+Everything on interface
+>`tcpdump -i eth0` 
+
+To or From IP
+>`tcpdump host 1.1.1.1`
+
+>`tcpdump src/dst IP`
+>`tcpdump net ip/24`
+
+>Hex/ASCII dump / -XX (eth header)
+ `tcpdump -c 1 -X icmp` 
+ `tcpdump port 3389`
+ `tcpdump src port 1025`
+ `tcpdump icmp`
+ `tcpdump portrange 21-23
+ `tcpdump less 32`
+ `tcpdump greater 64`
+ `tcpdump <= 128`
+ `tcpdump port 80 -w capture_file.pcap`
+ `tcpdump -r capture_file.pcap`
+
+Decrypt IPSEC with key.
+ >`tcpdump -E` 
+
+Raw output/human timestamps. Abs seq
+ >`tcpdump -ttnnvvS` 
+
+No resolution, hex dump, verbosity 1.
+ >`tcpdump -nvX src net NET and dst net NET or NET`
+
+Isolate TCP Flags
+TCP RST:
+ >`tcpdump "tcp[13] & 4!=0"`
+ >`tcpdump "tcp[tcpflags] == tcp-rst"`
+
+TCP SYN:
+ >`tcpdump 'tcp[13] & 2!=0'`
+ >`tcpdump 'tcp[tcpflags] == tcp-syn'`
+
+GET REQ:
+ >`tcpdump -vvAls0 | grep 'GET'`
+
+HOST HEADERS:
+ >`tcpdump -vvAls0 | grep 'Host:'`
+
+SSH Connections:
+ >`tcpdump 'tcp[(tcp[12]>>2):4] = 0x5353482D'`
+
+>DNS Traffic:
+ >`tcpdump -vvAs0 port 53`
+
+
+
+
+
+
+
+------------------------

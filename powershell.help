@@ -1,0 +1,162 @@
+********************
+PowerShell Basics
+********************
+
+powershell.exe  -ExecutionPolicy <script.ps1> [ unrestricted/bypass... ] - echo $env:PSExecutionPolicyPreference
+		-WindowStyle Hidden <script.ps1> - background execution
+		-Command <Get-Process>
+		-Command {Script-block}
+		-EncodedCommand $ENCODEDCOMMAND - execute base64 encoded commands ?? Interesting!
+		-NoProfile - do not exec profile scripts before our commands
+		-Version - Downgrade PS version.
+
+!!!Commands can be abbreviated if they are unique.
+
+Get-Help <target> -Full
+		  -Examples
+		  -Online - cool feature
+Update-Help - Updates help database
+
+Get-Command -Name Target
+
+Get-ChildItem | Format-List * - Object properties can be displayed in columns or formatted.
+
+
+
+Search for a String on files
+****************************
+Get-ChildItem(ls) -r <PATH> -File *.txt | % (ForEach-Object alias) { sls(Select-String alias) -Path $_(current variable) -Pattern PASS* }
+Select-String -Path PATH -Pattern REGEX
+Get-Content FILE
+
+Services
+*********
+Get-Service
+Get-Service "S*" | Sort-Object Status -Descending
+
+Get-Process | Sort-Object -Unique | Select-Object -Property ProcessName | Select-String -Pattern <PATTERN> -CaseSensitive - CMDLETS output objects.
+Get-Process | Sort-Object -Unique | Format-List Path, Id
+
+Get-Alias -Definition CMDLET
+
+$PSVersionTable - Powershell instance information
+
+Windows enumerations with PowerShell
+************************************
+
+Get-WmiObject -List
+Get-WmiObject -Class win32_OperatingSystem | select version, registereduser
+	             win32_OperatingSystem | select-object -Properties *
+		     win32_process
+		     win32_service | Sort-Object -Unique | fl Pathname | Export-Csv <Output File>
+		     win32_bios
+
+
+
+Execute a command on a remote machine
+*************************************
+Get-WmiObject -Query "SELECT * FROM Meta_Class WHERE __Class = 'win32_process' -namespace 'root/cimv2' -computername 'foo' 
+			-credential Get-Credential $process.create("notepade.exe")"
+
+
+# Parse input and display linenumbers - stringify
+****************************************************
+PS=> function nc {$input | Out-String -Stream | Select-String ".*" | Select-Object Linenumber, Line}
+Ps=> type TARGET | nc | findstr "STRING - LINENUMBER"
+
+
+			
+*************************
+PowerShell CMDLETS
+*************************
+
+- Get-Help [ [-Name] <System.String> ] [-Detailed/-Examples]
+
+- Get-Alias [ [-Definition] <System.String> ]
+	-Set-Alias -Name <NAME> -Value <VALUE>
+
+- Get-Verb
+
+- Get-Command -Verb
+	      -Noun
+
+- Get-Member - Display methods and props of objects. 
+PowerShell MODULES
+******************
+Packages that contains cmdlets, functions, providers and more.
+Types: Manifest, Scripts, Binaries.
+
+
+Enviroment Variable:
+	$Env:PSModulePath
+
+Cmdlets:
+	Get-Module 			- currently loaded/imported modules.
+	  	   -ListAvailable 	- available to load / installed modules on default folder.
+
+	Import-Module <MODULE.psm1>
+	
+	Export-ModuleMember
+	Remove-Module
+	New-Module
+	
+	Get-Command -Module MODULE
+
+
+Objects
+*******
+
+Get-Process | Get-Member -MemberType Method - Display only methods from the piped object.
+
+
+Loops
+*****
+for()
+foreach()
+while()
+do {} while()
+do {} until()
+
+EX: $services = Get-Service
+    foreach ($service in $services) {$service.Name} 
+		LOOP STATEMENT        LOOP BODY
+
+	Get-Service | ForEach-Object {$_.Name}
+
+	Get-ChildItem | Where-Object {$_.Name -Match "xls"}
+
+
+
+********************
+PowerShell Providers
+********************
+.NET programs that make Data available on the command line.
+
+BUILT-INS:
+	ENV:
+	REGISTRY:
+	FUNCTION:
+	VARIABLES:
+	DRIVES:
+
+Get-PSProvider
+	Get-Item Drive:
+	Set-Item
+	New-Item
+	New-ItemProperty -Path -Name -Type -Value
+	Remove-Item
+
+Get-Variable -Scope SCOPE[Global, local] -Name NAME
+
+
+
+***********888
+Functions
+Get-ExecutionPolicy !important
+
+function NAME ([type]param1, [type]param2,...)
+{
+	Statements
+}
+
+

@@ -1,0 +1,188 @@
+***************
+*Windows Tools*
+***************
+
+
+REGISTRY
+------------------------------------------------
+reg query HKCU/software/microsoft/windows/currentversion/runonce
+reg delete HKCU/software/.../runonce /va
+reg add KEY /v NAME /t TYPE /d DATA
+
+reg export KEY file.txt
+
+Security Principals
+-------------------------------------------------
+	whoami /USER - check current user SID
+	net - accounts and groups
+	net user 
+	  net user /add NAME PASS - Create a local user
+	    net user NAME - To see new user details
+	  net user /del NAME
+	net localgroup
+	  net localgroup GROUP USER /add
+	  net localgroup GROUP USER /del
+	net accounts - see or set accounts policies.  
+
+	Enable-LocalUser -Name "Administrator"
+	Disable-LocalUser -Name "Administrator"
+
+Sudo for Windows
+--------------------------------------------------
+runas /user:DOMAIN\USER "notepad.exe"
+
+Permissions
+--------------------------------------------------
+Files:
+	READ
+	WRITE
+	READ EXEC
+	MODIFY
+	FULL CONTROL
+Directories:
+	READ
+	WRITE
+	READ EXEC
+	LIST FOLDER CONTENTS (not allowing to see file contents)
+	MODIFY
+	FULL CONTROL
+
+ACLS/ACE
+---------------------------------------------------
+icacls ASSET /grant
+	     /deny
+		    USER:PERM()
+example:
+	icacls Music /grant Susan:(OI)(CI)(F)
+	icacls C:\Windows\* /save AclFile /T
+	
+
+(OI) - Childs inheritence
+(F) - Full permissions
+/T - recurse
+/C - ignore errors
+/L - Symlinks only
+
+SCHEDULE
+---------------------------------------------------
+tasklist /FI "USERNAME eq NT AUTHORITY\SYSTEM"
+tasllist /M
+tasklist /?
+taskill /PID
+
+pslist [-d -t]
+pskill pid
+
+schtasks /create /sc weekly /d mon /tn test /tr c:\windows\test.exe /st 09:00
+schtasks /query
+	 /delete
+
+
+DISK UTILITIES
+--------------------------------------------------
+fsutil fsinfo   drives
+		drivetype C:
+		volumeinfo C:
+Sysinternals du utility.
+
+HIDDEN DATA STREAMS
+-----------------------------------------------------
+echo hiddenStream > test.txt:stream1
+more < test.txt:stream1
+
+
+SYSTEM AND ENVIROMENT
+---------------------------------------------------
+systeminfo
+	/S system /U user /P password
+echo %ENV_VARIABLE%
+
+set => prints all env variables
+
+setx NAME VALUE     - set to local
+setx NAME VALUE /m  - set to system
+
+setx /S computer1 /u domain\username /p password MYENV VALUE
+
+setx NAME /k REGISTRY_KEY <\\HIVE\KEY\....\value>
+
+#Sysinternals
+psinfo /h - Hotfixes
+
+
+COMMON COMMANDS
+-----------------------------------------------------
+help
+help command
+cd
+cd\
+type
+time /T
+dir
+dir /S
+echo 2> newEmptyFile.txt
+echo "" > file.txt
+del file
+rename old new
+move src dst
+rmdir /S - recursive rem folders
+fc file1 file2 - compare files
+more
+
+mklink symlink target
+mklink /h hardlink target
+
+robocopy source destination file [options]
+	robocopy c:\Users \\marketing\videos myvideo.mov /mt /z
+	multithreading and restart if stopped.
+
+FIND FILES
+----------------------------------------------------------
+dir /S *.txt /p - pause the screen
+
+tree /F file | findstr "target"
+
+forfiles /P PATH /S /M *.exe /C "cmd /c echo @PATH"
+
+SEARCH STRINGS ON FILES - find similar to grep on linux
+----------------------------------------------------------
+find "STRING" C:\FILE
+type FILE | find "STRING"
+
+dir | find "importantFile.txt"
+
+findstr "STRING1 STRING2 ..." FILE
+
+type unordered.file | sort /R - sort descending order
+
+
+NETWORK SERVICES
+------------------------------------------------------------
+ipconfig
+	/all
+	/displaydns
+	/flushdns
+	/release
+	/renew
+
+systeminfo
+	/s COMPUTER /u USERNAME\DOMAIN /p PASSWORd (remote information)
+
+
+set - enviromentVariables
+setx - permament changes to env.
+
+netstat - active TCP connections
+	-ano
+	-b executable file
+	-o PID
+
+arp -a
+
+route print
+
+tracert
+pathping
+
+
+wip

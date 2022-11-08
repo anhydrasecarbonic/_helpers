@@ -1,0 +1,175 @@
+#############################
+# Intro to Active Directory #
+#############################
+
+Active Directory Structure:
+	-Domain Computers
+	-Domain Users
+	-Organizational Units
+	-Group Policy Objects
+	-Domain Trusts
+	-Default Domain Policy
+	-Password Policy
+	-Access Control List (ACLs)
+	-Functional Domain levels
+	-Domain Group Information
+
+AD Terminology:
+--------------
+	Objects => ANY resource within the hierarchy.
+	Attributes => Characteristics of the objects. LDAP name associated to each for queries.!!
+	Schema => Class definition for Object instances. (OOP). Its the AD blueprint.
+	Domain => Logical group of objects. Autonomous with Trust relationships with other Domains.
+	Forest => Top most container. Parent of all AD objects. Trust relationships w other Forests.
+	Tree => Domain Collection with Single rooted parent-child domain namespace. Global catalog is the container for object of trees.
+	GUID => unique object identifier. objectGUID attribute for each object. Most accurate way to search for an object.
+	DN => Full path of AD objects. cn=bjones, ou=employess, dc=inlanefright.com, dc=local
+	FMSO Roles => Way to distributed DC responsabilities.
+	Global Catalog => Stores copies of ALL objects of a Forest. Allow Auth and Object Search.
+	userPrincipalName => accountName@domainName.com
+	FQDM => host + domain host.domain.tld - Search hosts and computers in AD.
+	SACL => a way to log attemps to auth to security principals
+	DACL => each object has ACE to control security principals(users, accounts, processes) access to the object.
+	Tombstone => when no recycle bin. 60 - 180days dep on OS of DC. isDeleted attribute setted to True.
+	Recycle bin => preserves object attributes.
+	SYSVOL => share the stores public policy files, login scripts. All DC has a copy.
+	adminCount => attribute that informs about privilege users, protected by SDprop process.
+	GUI tools => ADUC and ADSI Edit.
+	sIDhistory => attribute that has prev SID values.
+	NTDS.DIT(file) => heart of AD.! C:\Windows\NTDS | stores hashes. and AD user, groups objects information database.
+	SPN => Service Principal Name uniq id a service instance.	
+
+AD Objects:
+-----------
+	Users: leaf objects. Security Principal. SID and GUID.
+
+Trusts:
+------
+	Forest-Forest
+	Domain-Domain ---- a link between auth systems.
+	Transitive
+	Non-Transitive
+	Bidirectioonal
+	Unidirectional
+
+		
+GPO(group policy objects):
+-------------------------
+	Location: SMB\\domain controller hostname\SYSVOL
+	Format: Bunch of XML files for configuration of the policy.
+	When is created is Linked to a domain or OU.
+	
+##################################
+### Active Directory Protocols ###
+##################################
+
+Kerberos - Port 88 TCP/UDP  - in charge of authentication and authorization.
+
+	Client => KKDC(Kerberos Key Distribution center
+	  KRB_AS_REQ(request TGT)
+	  KRB_AS_REP(return TGT)
+	  KRB_TGS_REQ(sends TGT request TGS)
+	  KRB_TGS_REP(return TGS)
+	
+	Client => Service Principal Name - Database Server
+	  AP_REQ
+
+
+LDAP v3.0 RFC4511 - Directory lookup - Port 389/ LDAPS(SSL) Port 636
+	AD is to LDAP what Apache is to HTTP:
+		*-Directory Server LDAP Protocol
+		*-WebServer HTTP Protocol  
+	
+LM Hashes: Password storage !Old mechanism. SAM file(local) or NTDS.DIT(DC) - insecure.
+	max length = 14char.
+
+NTHash-NTLM: challenge-response auth protocol. Algorithm: MD4(UTF-16-LE(password))
+NTLMv1
+NTLMv2
+
+##################################
+## All About Users & Groups- AD ##
+##################################
+
+Local User Accounts:
+-------------------
+	Administrator - can be renamed or disabled. In Safe mode disabled accounts are automatically enabled!!
+	Guest -
+	Default local account -
+
+
+Groups:
+------
+	-Type: Distribution or Security
+	-Scope:
+		*Domain Local: resources from the domain created. Accounts from any domain. Nested with locals. Not within Globals.
+		*Global:  resources on any domain. Accounts from creating domain only. Nested whithin locals and globals.
+		*Universal: any domain or object on the same forest. Stored in the GC. Triggers forest replication.!!
+
+		!!-Universal can be converted to local without restrictions.
+		!!-Universal can convert to global if is no Universal nested.
+		!!-Local can convert to Universal if no local nested.
+		!!-Global can conver to Universal if is no part of other global.
+
+Critical ADGroups:
+******************
+		-Domain Admins
+		-Server Operators
+		-Administrators
+
+
+GPO ( Group Policy Objects):
+***************************
+	-Applied to Users or Computers
+	-Collection of Policy settings
+	-Linked to OU, domains or sites.
+	
+
+Execution Policy
+***************
+ 
+`Get-ExecutionPolicy `
+`Set-ExecutionPolicy -ExecutionPolicy RemoteSigned`
+
+
+Core Cmdlets
+*****************************
+
+`Get-Help`
+`Get-Verb`
+
+`Get-Alias -Name ALIAS`
+`Set-Alias -Name NAME -Value VALUE`
+
+
+Determine what type of output thecucommand produces.
+---------------------------------------------------
+`Get-Service -Name w32time | Get-Member`
+TypeName: ServiceController - Object type returned.
+
+
+Get commands that accepts object typename.
+-------------------------------------------
+`Get-Command -ParameterType ServiceController`
+
+
+Select properties from object.
+------------------------------
+`Get-Service -Name SERVICE | Select-Object -Property *`
+
+Narrow by MemberType get methods from object.
+---------------------------------------------
+`Get-Service -Name w32time | Get-Member -MemberType Method`
+Stop a Service using the method.
+`(Get-Service -Name w32time).Stop()`
+
+Get commands from a module
+---------------------------
+`Get-Command -Module MODULE`
+
+Active Directory Cmdlets
+**************************
+Save queries to variables and the work with variables
+`$Users = Get-ADUser -Identity USER -Properties * | Get-Member`
+`$Users | Select-Object -Property Name, LastLogonDate, LastBadPasswor...`
+

@@ -1,0 +1,59 @@
+**********************
+** Basic TCP client **
+**********************
+#!/usr/bin/python3
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(("192.168.112.68", 2003))
+
+
+while 1:
+	data = s.recv(1024)
+	print(data.decode('ascii'))
+	data = s.recv(1024)
+	print(data.decode('ascii'))
+	res = input()
+	s.send(f"{res}\n".encode('ascii'))
+	
+
+****************
+Python Scripting
+****************
+
+DATATYPES:
+---------
+print(A) - Write A to STDOUT.
+type(A) - display the data type.
+int()
+str() - to typecast
+
+SLICES & STRINGS:
+----------------
+variable.index('string')
+variable[0:20]
+
+LISTS
+_____
+
+list.index(el)
+list.append(el)
+list.remove()
+
+
+***********************
+** Basic Web request **
+***********************
+
+#!/usr/bin/python3
+
+import requests as r
+
+
+f = open('words.txt', 'r')
+for line in f:
+	res = r.get(f"http://127.0.0.1:6666/{line.rstrip()}.html")
+	if res.status_code == 200:
+		print(res.text)
+
+f.close()
